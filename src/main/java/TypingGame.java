@@ -10,7 +10,12 @@ public class TypingGame {
     // File that holds the names of other files to be used
     public String resFile = "resources/filenamebank.txt";
 
-    private String[] wordBank;
+    FileReader fr;
+    BufferedReader br;
+
+
+    private String[] filenameBank;
+    private String[] wordsToType;
 
     private static Random rand;;
     
@@ -20,15 +25,21 @@ public class TypingGame {
     public TypingGame() throws IOException
     {
         rand = new Random();
-        initFilenameBank(resFile);
+        initRandom();
         
+        
+    }
+    private void initRandom() throws IOException
+    {
+        initFilenameBank(resFile);
+        loadWordBank("resources/"+randomWordBank(filenameBank));
     }
 
 
     public void promptUser()
     {
 
-        String typeWord = randomWordBank(wordBank);
+        String typeWord = this.wordsToType[0];
         System.out.println("Print: " + typeWord);
 
         double startTime = System.nanoTime();
@@ -69,8 +80,8 @@ public class TypingGame {
      */
     private void initFilenameBank(String fileName) throws IOException
     {
-        FileReader fr = new FileReader(fileName);
-        BufferedReader br = new BufferedReader(fr);
+        fr = new FileReader(fileName);
+        br = new BufferedReader(fr);
 
 
         int docSize = Integer.parseInt(br.readLine());
@@ -81,7 +92,29 @@ public class TypingGame {
             temp[i] = br.readLine();
         }
         br.close();
-        this.wordBank = temp;
+        this.filenameBank = temp;
+
+    }
+    /** loadWordBank
+     *  Currently loads a whole file into a single String
+     *      May change as this develops
+     * 
+     * @param filename
+     * @throws IOException
+     */
+    private void loadWordBank(String filename) throws IOException
+    {
+        fr = new FileReader(filename);
+        br = new BufferedReader(fr);
+        StringBuilder temp = new StringBuilder();
+        String line;
+        while((line = br.readLine()) != null)
+        {
+            temp.append(line);
+        }
+        String[] tempArray = new String[1];
+        tempArray[0] = temp.toString();
+        this.wordsToType = tempArray;
 
     }
 

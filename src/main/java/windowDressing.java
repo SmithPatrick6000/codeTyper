@@ -2,7 +2,12 @@
 import java.awt.*;
 import javax.swing.*;
 
+
+
 public class windowDressing {
+
+    //Game object
+    fileChooser fc;
 
     private final int width = 400;
     private final int height = 300;
@@ -20,6 +25,7 @@ public class windowDressing {
 
     public windowDressing()
     {
+        fc = new fileChooser();
         frame = new JFrame("Typing Game");
         initWindow();
     }
@@ -64,7 +70,9 @@ public class windowDressing {
         JTextField textField = new JTextField("Default text...");
         textField.setPreferredSize(new Dimension(200, 30));
 
-        JLabel toType = new JLabel("You should Type this");
+        String words = fc.initRandom();
+
+        JLabel toType = new JLabel(words);
 
         panel2.add(toType);
         panel2.add(textField);

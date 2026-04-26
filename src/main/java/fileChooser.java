@@ -1,112 +1,95 @@
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
 public class fileChooser {
 
     // File that holds the names of other files to be used
-    public String resFile = "resources/filenamebank.txt";
+    //public String resFile = "resources/filenamebank.txt";
 
     FileReader fr;
     BufferedReader br;
 
+    private final String javaCodePath = "resources/javabank.txt";
+    //private final String[] filenameBank = {"resources/javabank.txt"};
 
-    private String[] filenameBank;
-    private String[] wordsToType;
+    ArrayList<String> blocks;
+    Random rand;
 
-    private static Random rand;;
-    
-    
-    Scanner scanner = new Scanner(System.in);
-
-    public fileChooser() 
+    public fileChooser()
     {
-        rand = new Random();
-        initRandom();
-        
-        
-    }
-    public String initRandom()
-    {
-        initFilenameBank(resFile);
-        loadWordBank("resources/"+randomWordBank(filenameBank));
-        return this.wordsToType[0];
     }
 
-    
-    /** randomWordBank
-     *  Gets a random part out of any array
+    /** javaCode
+     *  Call when the java option is selected.  Loads java code into the ArrayList
      * 
-     * @return
      */
-    private <T> T randomWordBank(T[] array) 
+    public void javaCode()
     {
-        int n = rand.nextInt(array.length);
-        return array[n];
+        loadCode(javaCodePath);
     }
 
-    
-    /** initFilenameBank
-     *  Creates an array of all the different potential files to pull from
+    /** loadCode
+     *  Loads the code from the selected file and puts each block into an ArrayList
      * 
-     * @param fileName
+     * @param filename - The name of the file to open
      */
-    private void initFilenameBank(String fileName)
+    public void loadCode(String filename)
     {
-        
-        try {
-            fr = new FileReader(fileName);
-            br = new BufferedReader(fr);
-            
-            int docSize = Integer.parseInt(br.readLine());
+        // Makes sure old data is no longer in blocks
+        blocks = new ArrayList<>();
 
-            String[] temp = new String[docSize];
-            for (int i = 0; i < docSize; i++)
-            {
-                temp[i] = br.readLine();
-            }
-            br.close();
-            this.filenameBank = temp;
-
-        } catch (Exception e) {
-            System.err.println("initFilenameBank Error: " + e);
-        }
-
-    }
-
-
-
-    /** loadWordBank
-     *  Currently loads a whole file into a single String
-     *      May change as this develops
-     * 
-     * @param filename
-     */
-    private void loadWordBank(String filename) 
-    {
         try {
             fr = new FileReader(filename);
             br = new BufferedReader(fr);
-            StringBuilder temp = new StringBuilder();
-            String line;
-            while((line = br.readLine()) != null)
-            {
-                temp.append(line);
-            }
-            String[] tempArray = new String[1];
-            tempArray[0] = temp.toString();
-            this.wordsToType = tempArray;
+            Scanner scanner = new Scanner(br);
+            scanner.useDelimiter("--DELIMITER--");
             
+            String block;
+
+
+            while (scanner.hasNext())
+            {
+                block = scanner.next();
+                while (block.startsWith("\n") || block.startsWith("\r"))
+                {
+                    block = block.substring(1);
+                }
+                blocks.add(block);
+                
+            }
+            scanner.close();
+
+
         } catch (Exception e) {
-            System.err.println("loadWordBank Error: " + e);
         }
-        
 
     }
 
 
+    public String getRandomBlock()
+    {
+        rand = new Random();
+        
+        return blocks.get(rand.nextInt((blocks.size())));
+    }
 
+    public String getBlock(int id)
+    {
+        return blocks.get(id);
+    }
+
+    public void printBlocks()
+    {
+        for(int i = 0; i < blocks.size();i++)
+        {
+            //System.out.print("Start");
+            System.out.print(blocks.get(i));
+            //System.out.print("End");
+        }
+    }
 
 }

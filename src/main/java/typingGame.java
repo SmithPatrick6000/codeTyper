@@ -40,6 +40,12 @@ public class typingGame {
         return this.currentBlock;
     }
 
+    /** checkDone
+     *  Compares length of the User Input to the Current Word
+     * 
+     * @param userIn - The current User input
+     * @return - true if the length is the same, false if not
+     */
     public boolean checkDone(String userIn)
     {
         
@@ -54,7 +60,12 @@ public class typingGame {
     }
 
 
-    
+    /** checkAfterMethod
+     *  Compares the UserInput to the CurrentWord
+     *      Right now just outputs the number of errors
+     * 
+     * @return - The number of errors the user committed
+     */
     public int checkAfterMethod()
     {
         System.out.println(getParsedCurr());

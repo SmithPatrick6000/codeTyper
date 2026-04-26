@@ -42,6 +42,11 @@ public class windowDressing {
         initWindow();
     }
 
+    /** initWindow
+     *  Initializes the JFrame
+     *      Creates a Panel Container to tranfer thorugh panels easier
+     * 
+     */
     private void initWindow()
     {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -66,6 +71,10 @@ public class windowDressing {
         frame.setVisible(true);
     }
 
+    /** initPanel1
+     *  Initializes panel1 or the "Home Screen"
+     * 
+     */
     private void initPanel1()
     {
         panel1 = new JPanel();
@@ -79,6 +88,10 @@ public class windowDressing {
         panel1.add(button);
     }
 
+    /** initPanel2
+     *  Initializes panel2 or the "game Screen"
+     * 
+     */
     private void initPanel2()
     {
         panel2 = new JPanel();
@@ -136,6 +149,10 @@ public class windowDressing {
         panel2.add(textArea);
     }
 
+    /** initPanel3
+     *  Initializes panel3 or the "End Screen"
+     * 
+     */
     private void initPanel3()
     {
         panel3 = new JPanel();
@@ -149,6 +166,10 @@ public class windowDressing {
 
     }
 
+    /** updateErrors
+     *  Updates the amount of errors by the user after a game
+     * 
+     */
     public void updateErrors()
     {
         errorAmount = game.checkAfterMethod();
@@ -167,6 +188,10 @@ public class windowDressing {
         cardLayout.show(panelContainer, "game");
     }
 
+    /** showEnd
+     *  Switches the panel to the end panel
+     * 
+     */
     private void showEnd()
     {
         System.out.println("Errors: " + game.checkAfterMethod());

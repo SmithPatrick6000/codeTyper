@@ -9,14 +9,16 @@ public class fileChooser {
 
     // File that holds the names of other files to be used
     //public String resFile = "resources/filenamebank.txt";
-
     FileReader fr;
     BufferedReader br;
 
+    //The file with the different java code options
     private final String javaCodePath = "resources/javabank.txt";
-    //private final String[] filenameBank = {"resources/javabank.txt"};
 
+    // Holds the loaded blocks of code from the chosen language
     ArrayList<String> blocks;
+
+
     Random rand;
 
     public fileChooser()
@@ -69,7 +71,11 @@ public class fileChooser {
 
     }
 
-
+    /** getRandomBlock 
+     *  Returns a random block of code to type
+     * 
+     * @return - Block of code
+     */
     public String getRandomBlock()
     {
         rand = new Random();
@@ -77,11 +83,23 @@ public class fileChooser {
         return blocks.get(rand.nextInt((blocks.size())));
     }
 
+    /** getBlock
+     *  Gets a specified block from a file
+     *      You have to know the specific position beforehand
+     *          Mostly for testing purposes
+     * 
+     * @param id - The Location of the code block
+     * @return - Block of code
+     */
     public String getBlock(int id)
     {
         return blocks.get(id);
     }
 
+    /** printBlocks
+     *  Prints all blocks of code in the blocks array
+     * 
+     */
     public void printBlocks()
     {
         for(int i = 0; i < blocks.size();i++)

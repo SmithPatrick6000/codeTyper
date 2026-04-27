@@ -20,6 +20,7 @@ public class typingGame {
     public void loadRandBlock(fileChooser fc)
     {
         currentBlock = fc.getRandomBlock();
+        setParsedCurr(currentBlock.replace("\r\n", "\n").replace("\t", TAB_SIZE));
     }
 
     /** loadBlock
@@ -82,6 +83,8 @@ public class typingGame {
         
         return errorNum;
     }
+
+
 
     public String getTabSize()
     {

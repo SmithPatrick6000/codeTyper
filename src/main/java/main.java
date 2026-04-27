@@ -7,6 +7,9 @@ import java.io.IOException;
  *      Add timing to game
  *      Make the "Flow" of getting though into and out of each thing better
  * 
+ *      Fix the container logic for windows
+ *          I think by making most vars global but we will see
+ * 
  */
 
 

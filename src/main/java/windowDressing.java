@@ -32,7 +32,13 @@ public class windowDressing {
     private JPanel panel2;
     private JPanel panel3;
 
+    //Currently public things maybe change
     public int errorAmount;
+    public Timer timer;
+    long startTime;
+
+
+
 
     public windowDressing()
     {
@@ -60,11 +66,6 @@ public class windowDressing {
         initPanel2();
         initPanel3();
 
-        //panel3 = new JPanel();
-
-        panelContainer.add(panel1, "menu");
-        panelContainer.add(panel2, "game");
-        panelContainer.add(panel3, "end");
 
         frame.add(panelContainer);
         
@@ -86,6 +87,8 @@ public class windowDressing {
 
         panel1.add(label);
         panel1.add(button);
+
+        panelContainer.add(panel1, "menu");
     }
 
     /** initPanel2
@@ -104,6 +107,7 @@ public class windowDressing {
         //Initialize java code
         fc.javaCode();
         game = new typingGame();
+        //game.loadRandBlock(fc);
         game.loadBlock(fc, BALL_CODE_POS);
         String currWord = game.getCurrentBlock();
         tabSize = game.getTabSize();
@@ -147,6 +151,8 @@ public class windowDressing {
         
         panel2.add(toType);
         panel2.add(textArea);
+
+        panelContainer.add(panel2, "game");
     }
 
     /** initPanel3
@@ -164,17 +170,27 @@ public class windowDressing {
         errors.setPreferredSize(new Dimension(200, 100));
         panel3.add(errors);
 
+        JTextArea timeTake = new JTextArea("Total Time: " + startTime/1000.0 + " Seconds");
+        timeTake.setEditable(false);
+        timeTake.setPreferredSize(new Dimension(200, 100));
+        panel3.add(timeTake);
+
+
+
+
+        panelContainer.add(panel3, "end");
     }
 
-    /** updateErrors
-     *  Updates the amount of errors by the user after a game
+    /** updatePostGame
+     *  Updates the necessary data after a game is over
      * 
      */
-    public void updateErrors()
-    {
-        errorAmount = game.checkAfterMethod();
-        initWindow();
-    }
+    // public void updatePostGame()
+    // {
+    //     startTime = System.currentTimeMillis() - startTime;
+    //     errorAmount = game.checkAfterMethod();
+    //     initPanel3();
+    // }
     
 
     
@@ -185,6 +201,15 @@ public class windowDressing {
      */
     private void showGame()
     {
+        startTime = System.currentTimeMillis();
+        timer = new Timer(1000, e -> {
+            long elapsed = System.currentTimeMillis() - startTime;
+            double seconds = elapsed / 1000.0;
+
+    
+        });
+        timer.start();
+        
         cardLayout.show(panelContainer, "game");
     }
 
@@ -194,8 +219,14 @@ public class windowDressing {
      */
     private void showEnd()
     {
-        System.out.println("Errors: " + game.checkAfterMethod());
-        updateErrors();
+        timer.stop();
+        startTime = System.currentTimeMillis() - startTime;
+        errorAmount = game.checkAfterMethod();
+        //Updates Panel3
+        initPanel3();
+        System.out.println("Errors: " + game.checkAfterMethod() + " Total Time: " + startTime/1000.0);
+        
+        //updatePostGame();
         cardLayout.show(panelContainer, "end");
         
     }

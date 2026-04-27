@@ -8,3 +8,43 @@ public String getBall()
 {
     return this.ball;
 }
+--DELIMITER--
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+    }
+}
+--DELIMITER--
+public int add(int a, int b) {
+    return a + b;
+}
+--DELIMITER--
+for (int i = 0; i < 10; i++) {
+    System.out.println(i);
+}
+--DELIMITER--
+if (x > 0) {
+    System.out.println("Positive");
+} else {
+    System.out.println("Non-positive");
+}
+--DELIMITER--
+public static boolean isEven(int n) {
+    return n % 2 == 0;
+}
+--DELIMITER--
+while (true) {
+    System.out.println("Looping...");
+    break;
+}
+--DELIMITER--
+Scanner scanner = new Scanner(System.in);
+System.out.print("Enter number: ");
+int n = scanner.nextInt();
+System.out.println("You entered: " + n);
+--DELIMITER--
+JFrame frame = new JFrame("My Window");
+frame.setSize(400, 300);
+frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+frame.setVisible(true);
+--DELIMITER--

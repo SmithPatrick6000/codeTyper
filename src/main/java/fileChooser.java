@@ -14,6 +14,7 @@ public class fileChooser {
 
     //The file with the different java code options
     private final String javaCodePath = "resources/javabank.txt";
+    private final String cCodePath = "resources/cbank.txt";
 
     // Holds the loaded blocks of code from the chosen language
     ArrayList<String> blocks;
@@ -32,6 +33,10 @@ public class fileChooser {
     public void javaCode()
     {
         loadCode(javaCodePath);
+    }
+    public void cCode()
+    {
+        loadCode(cCodePath);
     }
 
     /** loadCode

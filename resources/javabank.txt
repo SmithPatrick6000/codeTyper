@@ -9,17 +9,21 @@ public String getBall()
     return this.ball;
 }
 --DELIMITER--
-public class HelloWorld {
-    public static void main(String[] args) {
+public class HelloWorld
+{
+    public static void main(String[] args)
+    {
         System.out.println("Hello World");
     }
 }
 --DELIMITER--
-public int add(int a, int b) {
+public int add(int a, int b)
+{
     return a + b;
 }
 --DELIMITER--
-for (int i = 0; i < 10; i++) {
+for (int i = 0; i < 10; i++)
+{
     System.out.println(i);
 }
 --DELIMITER--
@@ -29,7 +33,8 @@ if (x > 0) {
     System.out.println("Non-positive");
 }
 --DELIMITER--
-public static boolean isEven(int n) {
+public static boolean isEven(int n)
+{
     return n % 2 == 0;
 }
 --DELIMITER--

@@ -11,6 +11,7 @@ import javax.swing.event.DocumentListener;
 public class windowDressing {
 
     private static final int BALL_CODE_POS = 1;
+    private int gamemode;
 
     //Game object
     fileChooser fc;
@@ -36,6 +37,7 @@ public class windowDressing {
     public int errorAmount;
     public Timer timer;
     long startTime;
+    String[] modes = {"Java","C"};
 
 
 
@@ -62,14 +64,20 @@ public class windowDressing {
         cardLayout = new CardLayout();
         panelContainer = new JPanel(cardLayout);
 
-        initPanel1();
-        initPanel2();
-        initPanel3();
+        initPanels();
 
 
         frame.add(panelContainer);
         
         frame.setVisible(true);
+    }
+
+    public void initPanels()
+    {
+        initPanel1();
+        fc.javaCode();
+        initPanel2();
+        initPanel3();
     }
 
     /** initPanel1
@@ -82,11 +90,33 @@ public class windowDressing {
         JButton button = new JButton("Start");
         button.addActionListener(e -> showGame());
 
+        JComboBox<String> dropdown = new JComboBox<>(modes);
+
+        dropdown.addActionListener(e -> {
+            String selected = (String) dropdown.getSelectedItem();
+            switch (selected)
+            {
+                case ("Java"):
+                    javaMode();
+                case("C"):
+                    cMode();
+                default:
+                    System.err.print("No Mode Selected");
+            }
+        });
+        
+
+
+
+
+
         JLabel label = new JLabel("Click the Button");
+
 
 
         panel1.add(label);
         panel1.add(button);
+        panel1.add(dropdown);
 
         panelContainer.add(panel1, "menu");
     }
@@ -103,12 +133,12 @@ public class windowDressing {
 
 
 
-        
+        errorAmount = 0;
         //Initialize java code
-        fc.javaCode();
+        //fc.javaCode();
         game = new typingGame();
-        //game.loadRandBlock(fc);
-        game.loadBlock(fc, BALL_CODE_POS);
+        game.loadRandBlock(fc);
+        //game.loadBlock(fc, BALL_CODE_POS);
         String currWord = game.getCurrentBlock();
         tabSize = game.getTabSize();
         
@@ -118,13 +148,13 @@ public class windowDressing {
         System.out.println(currWord);
         JTextArea toType = new JTextArea(currWord);
         toType.setEditable(false);
-        toType.setPreferredSize(new Dimension(200, 100));
+        toType.setPreferredSize(new Dimension(300, 100));
         toType.setText(toType.getText().replace("\t",tabSize));
 
 
         //Sets the text area for the user to type in
-        JTextArea textArea = new JTextArea("Default text...");
-        textArea.setPreferredSize(new Dimension(200, 100));
+        JTextArea textArea = new JTextArea("");
+        textArea.setPreferredSize(new Dimension(300, 100));
         textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "insert-tab");
         textArea.getActionMap().put("insert-tab", new AbstractAction() {
             @Override
@@ -170,10 +200,14 @@ public class windowDressing {
         errors.setPreferredSize(new Dimension(200, 100));
         panel3.add(errors);
 
-        JTextArea timeTake = new JTextArea("Total Time: " + startTime/1000.0 + " Seconds");
+        JTextArea timeTake = new JTextArea("Total Time: " + startTime/1000.0 + " Seconds\nWPM: " + startTime/6000.0);
         timeTake.setEditable(false);
         timeTake.setPreferredSize(new Dimension(200, 100));
         panel3.add(timeTake);
+
+        JButton button = new JButton("Play Again?");
+        button.addActionListener(e -> showGame());
+        panel3.add(button);
 
 
 
@@ -209,7 +243,7 @@ public class windowDressing {
     
         });
         timer.start();
-        
+        initPanel2();
         cardLayout.show(panelContainer, "game");
     }
 
@@ -229,6 +263,15 @@ public class windowDressing {
         //updatePostGame();
         cardLayout.show(panelContainer, "end");
         
+    }
+
+    public void javaMode()
+    {
+        fc.javaCode();
+    }
+    public void cMode()
+    {
+        fc.cCode();
     }
 
 

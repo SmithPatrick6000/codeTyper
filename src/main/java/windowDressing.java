@@ -1,19 +1,20 @@
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
-
-
+import javax.swing.text.AttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
 
 public class windowDressing {
 
     private static final int BALL_CODE_POS = 1;
     private int gamemode;
 
-    //Game object
+    // Game object
     fileChooser fc;
     typingGame game;
 
@@ -21,72 +22,84 @@ public class windowDressing {
     private final int HEIGHT = 300;
     private String tabSize;
 
-    //Frame
+    // Frame
     private JFrame frame;
 
-    // How to switch screens
+    // Screen switching
     private CardLayout cardLayout;
     private JPanel panelContainer;
 
-    //Panels
-    private JPanel panel1;
+    // Panels
+    private JPanel titlePanel;
     private JPanel panel2;
     private JPanel panel3;
 
-    //Currently public things maybe change
+    // Data
     public int errorAmount;
+    public String correct;
+    public String user;
+    public String[] errorList;
     public Timer timer;
     long startTime;
     String[] modes = {"Java","C"};
 
-
-
+    // Logo
+    private Image logoImage;
+    private JLabel title;
 
     public windowDressing()
     {
         fc = new fileChooser();
         frame = new JFrame("Typing Game");
+
         errorAmount = 0;
+        errorList = new String[1];
+
+        correct = "Def";
+        user = "Def";
+
         initWindow();
     }
 
-    /** initWindow
-     *  Initializes the JFrame
-     *      Creates a Panel Container to tranfer thorugh panels easier
-     * 
-     */
     private void initWindow()
     {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(WIDTH,HEIGHT);
+        frame.setSize(WIDTH, HEIGHT);
         frame.setLocationRelativeTo(null);
+        frame.setResizable(true);
 
         cardLayout = new CardLayout();
         panelContainer = new JPanel(cardLayout);
 
         initPanels();
 
-
         frame.add(panelContainer);
-        
         frame.setVisible(true);
+
+        // Ensure logo is scaled AFTER frame exists
+        SwingUtilities.invokeLater(() -> resizeLogo());
+
+        frame.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                resizeLogo();
+            }
+        });
     }
 
     public void initPanels()
     {
-        initPanel1();
+        initTitlePanel();
         fc.javaCode();
         initPanel2();
         initPanel3();
     }
 
-    /** initPanel1
-     *  Initializes panel1 or the "Home Screen"
-     * 
-     */
-    private void initPanel1()
+
+    private void initTitlePanel()
     {
-        panel1 = new JPanel();
+        titlePanel = new JPanel(new GridBagLayout());
+        titlePanel.setBackground(Color.WHITE);
+
         JButton button = new JButton("Start");
         button.addActionListener(e -> showGame());
 
@@ -96,193 +109,285 @@ public class windowDressing {
             String selected = (String) dropdown.getSelectedItem();
             switch (selected)
             {
-                case ("Java"):
+                case "Java":
                     javaMode();
-                case("C"):
+                    break;
+                case "C":
                     cMode();
+                    break;
                 default:
                     System.err.print("No Mode Selected");
             }
         });
-        
-
-
-
-
 
         JLabel label = new JLabel("Click the Button");
+        label.setForeground(Color.WHITE);
 
+        // Load logo
+        logoImage = new ImageIcon("resources/title.png").getImage();
+        title = new JLabel();
 
+        // GridBag layout constraints
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10);
 
-        panel1.add(label);
-        panel1.add(button);
-        panel1.add(dropdown);
+        gbc.gridy = 0;
+        titlePanel.add(title, gbc);
 
-        panelContainer.add(panel1, "menu");
+        gbc.gridy = 1;
+        titlePanel.add(label, gbc);
+
+        gbc.gridy = 2;
+        titlePanel.add(button, gbc);
+
+        gbc.gridy = 3;
+        titlePanel.add(dropdown, gbc);
+
+        panelContainer.add(titlePanel, "menu");
     }
 
-    /** initPanel2
-     *  Initializes panel2 or the "game Screen"
-     * 
-     */
+    private void resizeLogo()
+    {
+        if (logoImage == null) {
+            System.out.println("Logo image is null");
+            return;
+        }
+
+        int w = frame.getWidth();
+        int h = frame.getHeight();
+
+        if (w <= 0 || h <= 0) return;
+
+        Image scaled = logoImage.getScaledInstance(
+                Math.max(300, w / 3),
+                Math.max(100, h / 4),
+                Image.SCALE_SMOOTH
+        );
+
+        title.setIcon(new ImageIcon(scaled));
+        title.revalidate();
+        title.repaint();
+    }
+
+
     private void initPanel2()
     {
-        panel2 = new JPanel();
-
-        panel2.setBackground(Color.BLUE);
-
-
+        panel2 = new JPanel(new GridBagLayout());
+        panel2.setBackground(Color.BLACK);
 
         errorAmount = 0;
-        //Initialize java code
-        //fc.javaCode();
+
         game = new typingGame();
         game.loadRandBlock(fc);
-        //game.loadBlock(fc, BALL_CODE_POS);
+
         String currWord = game.getCurrentBlock();
         tabSize = game.getTabSize();
-        
-        
 
-        //Sets the Text Area with the words to type
-        System.out.println(currWord);
         JTextArea toType = new JTextArea(currWord);
         toType.setEditable(false);
-        toType.setPreferredSize(new Dimension(300, 100));
-        toType.setText(toType.getText().replace("\t",tabSize));
+        toType.setLineWrap(true);
+        toType.setWrapStyleWord(true);
 
-
-        //Sets the text area for the user to type in
         JTextArea textArea = new JTextArea("");
-        textArea.setPreferredSize(new Dimension(300, 100));
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+
         textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "insert-tab");
         textArea.getActionMap().put("insert-tab", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                textArea.insert(tabSize, textArea.getCaretPosition()); // 4 spaces
+                textArea.insert(tabSize, textArea.getCaretPosition());
             }
         });
-        
+
         textArea.getDocument().addDocumentListener(new DocumentListener() {
-            public void changedUpdate(DocumentEvent e) { System.out.println("changedUpdate"); }
-            public void removeUpdate(DocumentEvent e) { System.out.println("removeUpdate"); }
-            public void insertUpdate(DocumentEvent e) 
-            { 
-                if(game.checkDone(textArea.getText()))
+            public void changedUpdate(DocumentEvent e) {}
+
+            public void removeUpdate(DocumentEvent e) {}
+
+            public void insertUpdate(DocumentEvent e)
+            {
+                if (game.checkDone(textArea.getText()))
                 {
-            
                     showEnd();
                 }
-                
-
             }
         });
 
-        
-        panel2.add(toType);
-        panel2.add(textArea);
+        JScrollPane scroll1 = new JScrollPane(toType);
+        JScrollPane scroll2 = new JScrollPane(textArea);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+
+        panel2.add(scroll1, gbc);
+
+        gbc.gridy = 1;
+        panel2.add(scroll2, gbc);
 
         panelContainer.add(panel2, "game");
     }
 
-    /** initPanel3
-     *  Initializes panel3 or the "End Screen"
-     * 
-     */
     private void initPanel3()
     {
-        panel3 = new JPanel();
-
+        panel3 = new JPanel(new GridBagLayout());
         panel3.setBackground(Color.BLACK);
-        
-        JTextArea errors = new JTextArea("Errors: " + errorAmount);
-        errors.setEditable(false);
-        errors.setPreferredSize(new Dimension(200, 100));
-        panel3.add(errors);
 
-        JTextArea timeTake = new JTextArea("Total Time: " + startTime/1000.0 + " Seconds\nWPM: " + startTime/6000.0);
+        JTextPane correctPane = new JTextPane();
+        JTextPane userPane = new JTextPane();
+
+        correctPane.setBackground(Color.BLACK);
+        userPane.setBackground(Color.BLACK);
+
+        correctPane.setEditable(false);
+        userPane.setEditable(false);
+
+        if (game == null)
+        {
+            correct = "";
+            user = "";
+        }
+        else
+        {
+            correct = game.getParsedCurr();
+            user = game.getParsedUser();
+
+            if (correct == null) correct = "";
+            if (user == null) user = "";
+        }
+
+        setColoredText(correctPane, correct, correct);
+        setColoredText(userPane, user, correct);
+
+        JTextArea errors = new JTextArea();
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Errors: ").append(errorAmount).append("\n");
+        errors.setText(sb.toString());
+        errors.setEditable(false);
+
+        JTextArea timeTake = new JTextArea(
+                "Total Time: " + startTime / 1000.0 +
+                " Seconds\nWPM: " + startTime / 6000.0
+        );
         timeTake.setEditable(false);
-        timeTake.setPreferredSize(new Dimension(200, 100));
-        panel3.add(timeTake);
 
         JButton button = new JButton("Play Again?");
         button.addActionListener(e -> showGame());
-        panel3.add(button);
 
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.BOTH;
 
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        panel3.add(new JScrollPane(correctPane), gbc);
 
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        panel3.add(new JScrollPane(userPane), gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 1;
+        gbc.weighty = 0;
+        panel3.add(errors, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        panel3.add(timeTake, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        panel3.add(button, gbc);
 
         panelContainer.add(panel3, "end");
     }
 
-    /** updatePostGame
-     *  Updates the necessary data after a game is over
-     * 
-     */
-    // public void updatePostGame()
-    // {
-    //     startTime = System.currentTimeMillis() - startTime;
-    //     errorAmount = game.checkAfterMethod();
-    //     initPanel3();
-    // }
-    
+    private void setColoredText (JTextPane pane, String text, String reference)
+    {
+        StyledDocument doc = pane.getStyledDocument();
+        pane.setText("");
 
-    
+        StyleContext sc = StyleContext.getDefaultStyleContext();
 
-    /** showGame
-     *  Switches the panel to the game panel
-     * 
-     */
+        for (int i = 0; i < text.length(); i++)
+        {
+            char c = text.charAt(i);
+
+            Color color;
+            
+            if (i < reference.length() && text.charAt(i) == reference.charAt(i))
+            {
+                color = Color.GREEN;
+            }
+            else
+            {
+                color = Color.RED;
+            }
+
+            AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, 
+                                    StyleConstants.Foreground, color);
+            
+            try 
+            {
+                doc.insertString(doc.getLength(), String.valueOf(c), aset);
+            } 
+            catch (Exception e) 
+            {
+                e.printStackTrace();
+            }
+            
+        }
+    }
+
+
     private void showGame()
     {
         startTime = System.currentTimeMillis();
+
         timer = new Timer(1000, e -> {
             long elapsed = System.currentTimeMillis() - startTime;
             double seconds = elapsed / 1000.0;
-
-    
         });
+
         timer.start();
+
         initPanel2();
         cardLayout.show(panelContainer, "game");
     }
 
-    /** showEnd
-     *  Switches the panel to the end panel
-     * 
-     */
     private void showEnd()
     {
         timer.stop();
         startTime = System.currentTimeMillis() - startTime;
-        errorAmount = game.checkAfterMethod();
-        //Updates Panel3
+
+        errorList = game.checkAfterMethod();
+        errorAmount = errorList.length;
+
         initPanel3();
-        System.out.println("Errors: " + game.checkAfterMethod() + " Total Time: " + startTime/1000.0);
-        
-        //updatePostGame();
         cardLayout.show(panelContainer, "end");
-        
     }
 
     public void javaMode()
     {
         fc.javaCode();
     }
+
     public void cMode()
     {
         fc.cCode();
     }
-
-
-
-    
-
-
-
-
-
-
-
-
 }

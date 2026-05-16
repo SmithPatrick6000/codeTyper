@@ -10,6 +10,8 @@ import java.io.IOException;
  *      Fix the container logic for windows
  *          I think by making most vars global but we will see
  * 
+ *      I think the container is more trouble then it's worth
+ * 
  */
 
 

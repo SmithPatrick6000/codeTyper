@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class typingGame {
     
     public static final String TAB_SIZE = "    ";
@@ -67,22 +69,28 @@ public class typingGame {
      * 
      * @return - The number of errors the user committed
      */
-    public int checkAfterMethod()
+    public String[] checkAfterMethod()
+{
+    if (getParsedUser() == null)
+        return new String[0];
+
+    ArrayList<String> errorList = new ArrayList<>();
+
+    int limit = Math.min(getParsedCurr().length(), getParsedUser().length());
+
+    for (int i = 0; i < limit; i++)
     {
-        System.out.println(getParsedCurr());
-        System.out.println(getParsedUser());
-        int errorNum = 0;
-        for(int i = 0; i < getParsedCurr().length(); i++)
+        if (getParsedCurr().charAt(i) != getParsedUser().charAt(i))
         {
-            if(getParsedCurr().charAt(i) != getParsedUser().charAt(i))
-            {
-                System.out.println("Should be: " + getParsedCurr().charAt(i) + " User Input: " + getParsedUser().charAt(i));
-                errorNum++;
-            }
+            errorList.add(
+                "Should be: " + getParsedCurr().charAt(i) +
+                " User Input: " + getParsedUser().charAt(i)
+            );
         }
-        
-        return errorNum;
     }
+
+    return errorList.toArray(new String[0]);
+}
 
 
 

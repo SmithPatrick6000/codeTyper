@@ -271,15 +271,18 @@ public class windowDressing {
         sb.append("Errors: ").append(errorAmount).append("\n");
         errors.setText(sb.toString());
         errors.setEditable(false);
+        int charAmount = game.getParsedCurr().length();
 
         JTextArea timeTake = new JTextArea(
                 "Total Time: " + startTime / 1000.0 +
-                " Seconds\nWPM: " + startTime / 6000.0
+                " Seconds\nWPM: " + ((charAmount / 5)) / (startTime /60000.0)
         );
         timeTake.setEditable(false);
 
-        JButton button = new JButton("Play Again?");
-        button.addActionListener(e -> showGame());
+        JButton againButton = new JButton("Play Again?");
+        againButton.addActionListener(e -> showGame());
+        JButton titleButton = new JButton("Menu");
+        titleButton.addActionListener(e -> showTitle());
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -311,7 +314,15 @@ public class windowDressing {
         gbc.gridy = 2;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
-        panel3.add(button, gbc);
+        panel3.add(againButton, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        panel3.add(titleButton, gbc);
+
+
 
         panelContainer.add(panel3, "end");
     }
@@ -353,6 +364,12 @@ public class windowDressing {
         }
     }
 
+
+    private void showTitle()
+    {
+        //initTitlePanel();
+        cardLayout.show(panelContainer, "menu");
+    }
 
     private void showGame()
     {
